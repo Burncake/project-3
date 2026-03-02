@@ -41,7 +41,7 @@ fi
 # ── System packages needed by some libs (pynput, mss, OpenCV) ────────────────
 echo "[setup] Checking system display / input dependencies…"
 PKGS_NEEDED=()
-for pkg in python3-venv libgl1 libglib2.0-0 wmctrl; do
+for pkg in python3-venv python3-dev build-essential libgl1 libglib2.0-0 wmctrl; do
   dpkg -s "$pkg" &>/dev/null || PKGS_NEEDED+=("$pkg")
 done
 if [[ ${#PKGS_NEEDED[@]} -gt 0 ]]; then
