@@ -28,9 +28,22 @@ echo "======================================================"
 
 # ── Check / install Node.js ───────────────────────────────────────────────────
 if ! command -v node &>/dev/null; then
-  echo "[setup] Node.js not found. Installing via apt…"
-  sudo apt-get update -qq
-  sudo apt-get install -y nodejs npm
+  echo "[setup] Node.js not found. Installing via package manager…"
+
+  if command -v apt-get &>/dev/null; then
+    echo "[setup] Detected Debian/Ubuntu (apt). Installing Node.js & npm…"
+    sudo apt-get update -qq
+    sudo apt-get install -y nodejs npm
+  elif command -v dnf &>/dev/null; then
+    echo "[setup] Detected Fedora (dnf). Installing Node.js & npm…"
+    sudo dnf install -y nodejs npm
+  elif command -v yum &>/dev/null; then
+    echo "[setup] Detected CentOS/RHEL (yum). Installing Node.js & npm…"
+    sudo yum install -y nodejs npm
+  else
+    echo "[setup] Unsupported package manager. Please install Node.js and npm manually."
+    exit 1
+  fi
 else
   echo "[setup] Node.js found: $(node --version)"
 fi
