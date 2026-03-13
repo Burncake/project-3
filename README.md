@@ -6,9 +6,9 @@ A web-based remote administration tool that lets you control multiple machines s
 
 - **Client** — web app running in the browser
 - **Server** — relay server + controlled machine agent
-- Supports controlling **multiple machines at once**
 
 ### Features
+- Supports controlling **multiple machines at once**
 - List / Start / Stop **Applications** (windowed)
 - List / Start / Stop **Processes** (all)
 - **Screenshot** — view the remote screen
